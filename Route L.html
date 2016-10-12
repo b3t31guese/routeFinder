@@ -100,6 +100,20 @@ function findRoute(points){
     for (var x in points){
         if (ctr>0){
         formatPoints = ";".concat(x.toString());
+            var directionsUrl = 'https://api.tiles.mapbox.com/v4/directions/mapbox.driving/' +
+        points + '.json?access_token=' + L.mapbox.accessToken;
+        $.get(directionsUrl, function(data) {
+            // Do something with the directions returned from the API.
+            var route = data.routes[0].geometry.coordinates;
+            route = route.map(function(point) {
+                // Turns out if we zoom out we see that the lat/lngs are flipped,
+                // which is why it didn't look like they were being added to the
+                // map. We can invert them here before drawing.
+                return [point[1], point[0]];
+            });
+            polyline.setLatLngs(route);
+        });
+
 
     }
 
@@ -120,19 +134,6 @@ function findRoute(points){
      
 
 
-    var directionsUrl = 'https://api.tiles.mapbox.com/v4/directions/mapbox.driving/' +
-        points + '.json?access_token=' + L.mapbox.accessToken;
-        $.get(directionsUrl, function(data) {
-            // Do something with the directions returned from the API.
-            var route = data.routes[0].geometry.coordinates;
-            route = route.map(function(point) {
-                // Turns out if we zoom out we see that the lat/lngs are flipped,
-                // which is why it didn't look like they were being added to the
-                // map. We can invert them here before drawing.
-                return [point[1], point[0]];
-            });
-            polyline.setLatLngs(route);
-        });
 
 
 
