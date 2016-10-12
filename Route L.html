@@ -100,15 +100,23 @@ function findRoute(points){
     for (var x in points){
         if (ctr>0){
         formatPoints = ";".concat(x.toString());
-        console.log(formatPoints)
+
     }
 
 
-        else {
-            ctr = ctr+1;
-            console.log("Select second point")
+
+
+        if (ctr==0) {
+            
+            
+            formatPoints = x.toString();
+            console.log("First point added")
         }
+
+        ctr = ctr+1;
     }
+
+    console.log(formatPoints)
      
 
 
