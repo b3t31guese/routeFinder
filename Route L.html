@@ -93,15 +93,18 @@ function addWaypoint(data){
 
 function findRoute(points){
 
-    var formatPoints
+    var formatPoints;
+    var ctr = 0;
+
 
     for (var x in points){
-        if (points.length()>1){
+        if (ctr>0){
         formatPoints = ";".concat(x.toString());
     }
 
 
         else {
+            ctr = ctr+1;
             console.log("Select second point")
         }
     }
