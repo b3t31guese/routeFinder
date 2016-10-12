@@ -93,6 +93,20 @@ function addWaypoint(data){
 
 function findRoute(points){
 
+    var formatPoints
+
+    for (var x in points){
+        if (points.length()>1){
+        formatPoints = ";".concat(x.toString());
+    }
+
+
+        else {
+            console.log("Select second point")
+        }
+    }
+     
+
 
     var directionsUrl = 'https://api.tiles.mapbox.com/v4/directions/mapbox.driving/' +
         points + '.json?access_token=' + L.mapbox.accessToken;
