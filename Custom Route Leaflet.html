@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Route Finder</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+<!-- <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+<!-- 
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+<link rel="stylesheet" href="leaflet-routing-machine.css" />
+
+<script src="leaflet-routing-machine.js"></script>
+ -->
+
+
+<style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+</head>
+<body>
+
+
+<style>
+  pre.ui-output {
+    display:block;
+    position:absolute;
+    bottom:10px;
+    left:10px;
+    padding:5px 10px;
+    background:rgba(0,0,0,0.5);
+    color:#fff;
+    font-size:11px;
+    line-height:18px;
+    border-radius:3px;
+    max-height:50%;
+    max-width:25%;
+    overflow:auto;
+    word-wrap: break-word;
+    white-space:pre-wrap;
+    }
+    pre.ui-output:empty { padding:0; }
+</style>
+<div id='map'></div>
+<pre id='output' class='ui-output'></pre>
+<script>
+L.mapbox.accessToken = 'pk.eyJ1IjoicHJhc2hhbnRrdXJ1cCIsImEiOiJjaXE2Yms0MmQwMDdzZnNra2VzcHE1OTQ3In0.gxsfnSyKvnldYpA-Uhul0A';
+var output = document.getElementById('output');
+var map = L.mapbox.map('map', 'mapbox.streets');
+
+// Initialize the geocoder control and add it to the map.
+var geocoderControl = L.mapbox.geocoderControl('mapbox.places', { autocomplete: true });
+ geocoderControl.addTo(map);
+
+// Listen for the `select` result and display the first result
+// in the output container. For all available events, see
+// https://www.mapbox.com/mapbox.js/api/v2.4.0/l-mapbox-geocodercontrol/#section-geocodercontrol-on
+
+var setPopup;
+var temp
+
+geocoderControl.on('select', function(res) {
+    //reverse the latlng for mapbox compatibility
+    setPopup = res.feature.geometry.coordinates.toString().split(",");
+    temp = setPopup[0];
+    setPopup[0] = setPopup[1];
+    setPopup[1] = temp;
+
+    // Popup
+    var popup = L.popup();
+    popup
+            .setLatLng(setPopup)
+            //Add button
+            .setContent("<h1>"+ res.feature.place_name + "</h1></br><button onclick='addWaypoint(setPopup)'>Add Waypoint</button>")
+            .openOn(map);
+});
+
+//Waypoints holder
+var waypoints = [];
+
+function addWaypoint(data){
+    
+    waypoints.push(data);
+    console.log(waypoints)
+    findRoute(data);
+     
+    }
+   
+var ctr = 0;
+var formatPoints;
+var directionsUrl;
+var polyline;
+var d = {};
+
+
+function findRoute(latlng){
+
+        // Subsequent waypoints
+
+            if (ctr==1 || ctr==2){
+
+                // Reverse LatLng format for Mapbox
+                temp1 = latlng[0];
+                latlng[0] = latlng[1];
+                latlng[1] = temp1;
+
+                console.log(formatPoints  + " before")
+                formatPoints = formatPoints.toString().concat(";");
+                console.log(latlng.toString()+" latlng")
+                formatPoints = formatPoints.concat(latlng.toString());
+                console.log("Waypoint added " + formatPoints)
+                ctr=2;
+            }
+
+            // Origin point
+            if (ctr==0) {
+
+                //Reverse LatLng format for Mapbox
+                temp1 = latlng[0];
+              //  console.log(latlng[1])
+                latlng[0] = latlng[1];
+                latlng[1] = temp1;
+
+                formatPoints = latlng.toString();
+                
+                console.log("Origin added " + formatPoints)
+                ctr = 1;
+            }
+
+        
+
+            if(ctr==2){
+            console.log("Getting directions... Search String : "+formatPoints)
+            directionsUrl = 'https://api.tiles.mapbox.com/v4/directions/mapbox.driving/' +
+            formatPoints + '.json?access_token=' + L.mapbox.accessToken;
+
+            //JQuery used to query directions API
+        $.get(directionsUrl, function(data) {
+                       
+            var route = data.routes[0].geometry.coordinates;
+            var tempest = route.toString().split(",");
+            var lat,lng;
+            var m = 0;
+            while (m < tempest.length){
+                    lng = parseFloat(tempest[m]);
+                    lat = parseFloat(tempest[m+1]);
+                    finroute.push(new L.LatLng(lat,lng));
+                    m=m+2;
+
+            }
+            console.log(finroute.length)
+            drawPolyline(finroute);
+
+         
+
+      
+        
+            });
+        }
+
+var finroute = [];
+
+
+
+
+function drawPolyline(track){
+
+    var polylineOptions = {
+               color: 'blue',
+               weight: 6,
+               opacity: 0.9
+             };
+
+         var polyline = new L.Polyline(track, polylineOptions);
+
+         map.addLayer(polyline);                        
+
+         // zoom the map to the polyline
+         map.fitBounds(polyline.getBounds());
+
+
+  }
+
+}
+
+    
+</script>
+
+
+</body>
+</html>
