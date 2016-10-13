@@ -157,9 +157,6 @@ function drawPolyline(track){
          // zoom the map to the polyline
          map.fitBounds(polyline.getBounds());
 
-
-}
-
 //JQuery used to query directions API
         $.get(directionsUrl, function(data) {
                        
@@ -182,6 +179,8 @@ function drawPolyline(track){
       
         
     });
+  }
+
 }
 
     
