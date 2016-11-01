@@ -46,13 +46,19 @@
     white-space:pre-wrap;
     }
     pre.ui-output:empty { padding:0; }
+
+   
+
+
 </style>
 <div id='map'></div>
+
 <pre id='output' class='ui-output'></pre>
 <script>
 L.mapbox.accessToken = 'pk.eyJ1IjoicHJhc2hhbnRrdXJ1cCIsImEiOiJjaXE2Yms0MmQwMDdzZnNra2VzcHE1OTQ3In0.gxsfnSyKvnldYpA-Uhul0A';
 var output = document.getElementById('output');
 var map = L.mapbox.map('map', 'mapbox.streets');
+
 
 // Initialize the geocoder control and add it to the map.
 var geocoderControl = L.mapbox.geocoderControl('mapbox.places', { autocomplete: true });
@@ -115,6 +121,7 @@ function findRoute(latlng){
                 console.log(latlng.toString()+" latlng")
                 formatPoints = formatPoints.concat(latlng.toString());
                 console.log("Waypoint added " + formatPoints)
+                alert("Waypoint Added: " + formatPoints)
                 ctr=2;
             }
 
@@ -130,6 +137,7 @@ function findRoute(latlng){
                 formatPoints = latlng.toString();
                 
                 console.log("Origin added " + formatPoints)
+                alert("Origin Point Added: " + formatPoints)
                 ctr = 1;
             }
 
